@@ -33,8 +33,8 @@ class Player(object):
         self.psw = psw
         self.user_id = None
         self.token = None
-        self.registered = False
-        self.logged = False
+        self.is_register = None
+        self.is_log = None
         self.id = None
         self.cards = None
 
@@ -44,8 +44,8 @@ class Player(object):
         print(self.psw)
         print(self.user_id)
         print(self.token)
-        print(self.register)
-        print(self.logged)
+        print(self.is_register)
+        print(self.is_log)
         print(self.id)
         print(self.cards)
         print()
@@ -57,7 +57,7 @@ class Player(object):
         status = r.json()['status']
         if status == 0 and 'user_id' in r.json()['data']:
             self.user_id = r.json()['data']['user_id']
-            self.registered = True
+            self.is_register = True
             print('register may be successful')
             print(r.text)
         else:
@@ -71,10 +71,9 @@ class Player(object):
         r = login_(self.user, self.psw)
         status = r.json()['status']
         if status == 0 and 'user_id' in r.json()['data']:
+            self.user_id = r.json()['data']['user_id']
             self.token = r.json()['data']['token']
-            print(self.logged)
-            self.logged = True
-            print(self.logged)
+            self.is_log = True
             print('Login may be successful')
             print(r.text)
             self.show()
