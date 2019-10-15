@@ -2,7 +2,7 @@
 
 # 运行环境
 
--windows
+- windows
 
 # 使用方法
 
