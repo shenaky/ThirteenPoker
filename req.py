@@ -2,8 +2,7 @@
 
 import requests
 import json
-
-
+import Thirteen_Poker
 
 def status_display(key):
     dict = {
@@ -76,7 +75,6 @@ class Player(object):
             self.is_log = True
             print('Login may be successful')
             print(r.text)
-            self.show()
         else:
             print('login fialed!')
             status_display(status)
@@ -111,7 +109,7 @@ class Player(object):
 
     # 返回登陆状态
     def check_login_status(self):
-        return self.logged
+        return self.is_log
 
     # 开局
     def game_open(self):
@@ -120,6 +118,8 @@ class Player(object):
         if status == 0:
             self.id = r.json()['data']['id']
             self.cards = r.json()['data']['card']
+            print('game_open may be successful')
+            print(r.text)
         else:
             print('game_open fialed!')
             status_display(status)
@@ -128,8 +128,19 @@ class Player(object):
 
     # 出牌
     def game_submit(self, submit_card):
-        r = game_submit_(self.token, self.id, submit_card)
+        url = "https://api.shisanshui.rtxux.xyz/game/submit"
+        data = {
+            'id': self.id,
+            'card': submit_card
+        }
+        headers = {
+            'content-type': "application/json",
+            'x-auth-token': self.token
+        }
+        r = requests.post(url, data=json.dumps(data), headers=headers)
         status = r.json()['status']
+        print('game_submit may be successful')
+        print(r.text)
         if status != 0:
             print('game_submit fialed!')
             status_display(status)
@@ -137,11 +148,22 @@ class Player(object):
 
     # 历史
     def get_history(self, page, limit, play_id):
+        url = "https://api.shisanshui.rtxux.xyz/history"
+        querystring = {
+            "page": page,
+            "limit": limit,
+            "player_id": play_id
+        }
+        headers = {
+            'x-auth-token': self.token
+        }
+        r = requests.get(url, headers=headers, params=querystring)
         data = []
-        r = history(self.taken, page, limit, play_id)
         status = r.json()['status']
         if status == 0:
             data = r.json()['data']
+            print('get_history may be successful')
+            print(r.text)
         else:
             print('get_history fialed!')
             status_display(status)
@@ -157,9 +179,24 @@ class Player(object):
             print('get_history_detail fialed!')
             status_display(status)
             print(r.text)
+        return data
 
     def get_rank(self):
-        pass
+        data = []
+        r = rank_(self.token)
+        # status = r.json()['status']
+        data = r.json()
+        print('get_rank may be successful')
+        # print(data)
+        # if status == 0:
+        #     data = r.json()['data']
+        #     print('get_rank may be successful')
+        #     print(r.text)
+        # else:
+        #     print('get_rank fialed!')
+        #     status_display(status)
+        #     print(r.text)
+        return data
 
 
 # 注册
@@ -268,17 +305,40 @@ def history_detail(token, id):
     r = requests.get(url, headers=headers)
     return r
 
+def rank_(token):
+    url = "https://api.shisanshui.rtxux.xyz/rank"
+    headers = {
+        'x-auth-token': token
+    }
+    r = requests.get(url, headers=headers)
+    # print(r.text)
+    # url = r.requests.headers['string']
+    # r = requests.get(url, headers=headers)
+    return r
 
 def main():
-    p1 = Player('te222d3', '12345678')
+    p1 = Player('s12', '12345678')
 
- #   p1.register()
+    # p1.register()
 
     p1.login()
 
-    p1.validate_token()
+    # card = p1.game_open()
+    # print()
+    # s = Thirteen_Poker.AI(card) 
+    # print()
+    # p1.game_submit(s)
 
-    p1.logout()
+    data = p1.get_history(0, 20, p1.user_id)
+    print(data)
+
+    # data = p1.get_history(5, 5, 1)
+    # print(data)
+    # data = p1.get_rank()
+    # print(data)
+
+    p1.validate_token()
+    # p1.logout()
 
     p1.show()
 
