@@ -165,6 +165,9 @@ class TextBox():
  
         self.text += char
 
+    def get_text(self):
+        return self.text
+
     def pressed(self,mouse):
         if mouse[0] > self.rect.topleft[0]:
             if mouse[1] > self.rect.topleft[1]:

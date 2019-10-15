@@ -157,6 +157,7 @@ def main():
                 # page 1
                 if current_page == 1:
                     if button_login.pressed(mouse):
+                        p1 = Player(TB1.get_text(), TB2.get_text())
                         p1.login()
                         if p1.check_login_status():
                             current_page = 3
@@ -166,7 +167,9 @@ def main():
                 # page 2
                 if current_page == 2:
                     if button_register.pressed(mouse):
-                        pass
+                        p1.register(TB1.get_text(), TB2.get_text())
+                        if p1.check_register_status():
+                            current_page = 1
                     if button_back.pressed(mouse):
                         current_page = 1
                 
@@ -187,7 +190,7 @@ def main():
                         TL1.update(0, rank_data)
                     if button_history.pressed(mouse):
                         current_page = 6
-                        history_data = p1.get_history(5, 5, 1)
+                        history_data = p1.get_history(0, 20, p1.user_id)
                         TL2.update(0, history_data)
                 # page 5
                 if current_page == 5:
@@ -268,7 +271,7 @@ def main():
         pygame.display.update()
         pygame.display.flip()
         if(current_page == 4 and p1.push == False):
-                s = Thirteen_Poker.AI(card)
+                s = card_order.AI(card)
                 p1.game_submit(s)
                 p1.push = True
         clock.tick(20)

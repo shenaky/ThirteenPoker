@@ -132,6 +132,9 @@ class Player(object):
     # 返回登陆状态
     def check_login_status(self):
         return self.is_log
+    
+    def check_register_status(self):
+        return self.is_register
 
     # 开局
     def game_open(self):
