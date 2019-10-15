@@ -437,94 +437,6 @@ def change(x):
     return str(x)
 
 
-
-def rank():
-    url = "https://api.shisanshui.rtxux.xyz/rank"
-    response = requests.get(url)
-    print(response.text)
-
-def history(limit,page):
-    global id
-    url = 'https://api.shisanshui.rtxux.xyz/history'
-    headers = {"X-Auth-Token":token}
-    params= {
-        "player_id": id,
-        "limit": limit,
-        "page": page
-    }
-    response=requests.get(url,params=params,headers=headers)
-    print(response.text)
-
-def history_detail():
-    global id
-    url = 'https://api.shisanshui.rtxux.xyz/history/{'
-    url+=str(id)
-    url+='}'
-    headers = {"X-Auth-Token": token}
-    response = requests.get(url,headers=headers)
-    print(response)
-
-
-def opengame():
-    global token,id
-    url = "https://api.shisanshui.rtxux.xyz/game/open"
-    headers = {"X-Auth-Token": token}
-    response = requests.post(url, headers=headers)
-    message=response.json()
-    id=message["data"]["id"]
-    card=message["data"]["card"]
-    print(response.text)
-    return card
-
-
-
-
-
-def submitgame(submit_ans):
-    global token, id
-    url = "https://api.shisanshui.rtxux.xyz/game/submit"
-    headers = {"content-type": "application/json"}
-    headers["X-Auth-Token"] = token
-    data={}
-    data={"id":id}
-    data["card"]=submit_ans
-    response=requests.post(url,data=json.dumps(data),headers=headers)
-    print(response.text)
-
-
-def logout():
-    global token
-    url = "https://api.shisanshui.rtxux.xyz/auth/logout"
-    headers = {"X-Auth-Token":token}
-    response = requests.post(url,headers=headers)
-    print(response.text)
-
-def login_check():
-    global token
-    url = "https://api.shisanshui.rtxux.xyz/auth/validate"
-    headers = {"X-Auth-Token": token}
-    response = requests.get(url,headers=headers)
-    print(response.text)
-
-
-def login(usename,password):
-    global token
-    url = "https://api.shisanshui.rtxux.xyz/auth/login"
-    payload = "{\"username\":"+"\""+usename+"\""+","+"\"password\":"+"\""+password+"\""+"}"
-    headers = {'content-type': 'application/json'}
-    response = requests.post(url, data=payload, headers=headers)
-    message = response.json()  # 登录
-    token = message["data"]["token"]
-    print (response.text)
-
-def registered(usename,password):
-    url = "https://api.shisanshui.rtxux.xyz/auth/register"
-    payload = "{\"username\":"+"\""+usename+"\""+","+"\"password\":"+"\""+password+"\""+"}"
-    headers = {'content-type': 'application/json'}
-    response = requests.post(url, data=payload, headers=headers)
-    print(response.text)
-
-
 # def read_opengame():#读入
 
 #     str0 = opengame()#开始牌局
@@ -578,24 +490,12 @@ def printf_ans():#输出
 
 
 #主函数
-
 def AI(card):
-    # usename=input()
-    # password=input()
-    # registered(usename,password)#注册
-    # login(usename,password)#登录
-    # login_check()#验证
     read_opengame(card)#开启牌局，读入
     dfs_1(1, 1)#解决问题，深搜
     submit_ans=printf_ans()
-    # print(submit_ans)
-    # submitgame(submit_ans)#提交牌局
     return submit_ans
-    # rank()
-    # history(5,1)#历史记录
-    # history_detail()#记录详情
-    # logout()  # 注销
-    #print("权值:",end_ans)
+
 
 
 

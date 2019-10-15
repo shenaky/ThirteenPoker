@@ -1,31 +1,14 @@
 # -*- coding=utf-8 -*-
 import pygame
 import string
-from threading import Thread
 from widget import *
 from req import *
-import Thirteen_Poker
-# from Queue import Queue
-from threading import Thread
-
-# q = Queue()
-
-
+import card_order
 
 WHITE = (255, 255, 255)
 GREEN = ( 0, 128, 128)
 BLUE = ( 0, 0, 128)
 BLACK = (0, 0, 0)
-
-
- 
- # 文本
-def Laber_draw(text, screen, x, y):
-    font = pygame.font.SysFont('arial', 12)
-    textSurfaceObj = font.render(text, True, (0, 0, 0))
-    rect = textSurfaceObj.get_rect()
-    rect.center = x,y
-    screen.blit(textSurfaceObj,  rect)
 
 def draw_card(screen, x, y, card_list=None ,card_dirt=None):
     i = 0

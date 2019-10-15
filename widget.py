@@ -1,5 +1,13 @@
 import pygame
 
+ # 文本
+def Laber_draw(text, screen, x, y):
+    font = pygame.font.SysFont('arial', 12)
+    textSurfaceObj = font.render(text, True, (0, 0, 0))
+    rect = textSurfaceObj.get_rect()
+    rect.center = x,y
+    screen.blit(textSurfaceObj,  rect)
+
 # 列表
 class TextList():
     def __init__(self, data, x, y, limit, Column, w, h, flag,font=None):

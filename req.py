@@ -2,7 +2,7 @@
 
 import requests
 import json
-import Thirteen_Poker
+import card_order
 
 def status_display(key):
     dict = {
@@ -24,8 +24,6 @@ def status_display(key):
         print('KeyError %d' % key)
 
 # 玩家类
-
-
 class Player(object):
     def __init__(self, user, psw):
         self.user = user
@@ -51,8 +49,14 @@ class Player(object):
     # 注册
 
     def register(self):
-        # 访问api
-        r = register_(self.user, self.psw)
+        url = 'https://api.shisanshui.rtxux.xyz/auth/register'
+        headers = {'Content-Type': 'application/json'}
+        data = {
+            'username': self.user,
+            'password': self.psw
+        }
+        r = requests.post(url, headers=headers, data=json.dumps(data))
+
         status = r.json()['status']
         if status == 0 and 'user_id' in r.json()['data']:
             self.user_id = r.json()['data']['user_id']
@@ -64,10 +68,18 @@ class Player(object):
             status_display(status)
             print(r.text)
             
-
     # 登录
     def login(self):
-        r = login_(self.user, self.psw)
+        url = "https://api.shisanshui.rtxux.xyz/auth/login"
+        headers = {
+            'content-type': 'application/json'
+        }
+        data = {
+            "username": self.user,
+            "password": self.psw
+        }
+        r = requests.post(url, data=json.dumps(data), headers=headers)
+
         status = r.json()['status']
         if status == 0 and 'user_id' in r.json()['data']:
             self.user_id = r.json()['data']['user_id']
@@ -82,7 +94,12 @@ class Player(object):
 
     # 注销
     def logout(self):
-        r = logout_(self.token)
+        url = "https://api.shisanshui.rtxux.xyz/auth/logout"
+        headers = {
+            'x-auth-token': self.token
+        }
+        r = requests.post(url, headers=headers)
+
         status = r.json()['status']
         if status == 0:
             self.logged = False
@@ -95,7 +112,12 @@ class Player(object):
 
     # 登录验证
     def validate_token(self):
-        r = validate_(self.token)
+        url = 'https://api.shisanshui.rtxux.xyz/auth/validate'
+        headers = {
+            'X-Auth-Token': self.token
+        }
+        r = requests.get(url, headers=headers)
+
         status = r.json()['status']
         if status == 0 and 'user_id' in r.json()['data']:
                 if 'token' in r.json()['data']:
@@ -113,7 +135,12 @@ class Player(object):
 
     # 开局
     def game_open(self):
-        r = game_open_(self.token)
+        url = "https://api.shisanshui.rtxux.xyz/game/open"
+        headers = {
+            'x-auth-token': self.token
+        }
+        r = requests.post(url, headers=headers)
+
         status = r.json()['status']
         if status == 0:
             self.id = r.json()['data']['id']
@@ -171,10 +198,19 @@ class Player(object):
         return data
 
     def get_history_detail(self, id):
-        r = history_detail(self.taken, id)
+        url = "https://api.shisanshui.rtxux.xyz/history/" + str(id)
+        headers = {
+            'x-auth-token': self.token
+        }
+        r = requests.get(url, headers=headers)
+
+        data = []
         status = r.json()['status']
         if status == 0:
-            data = r.json()['data']
+            data = r.json()['data']['detail']
+            print('get_history_detail may be successful')
+            status_display(status)
+            print(r.text)
         else:
             print('get_history_detail fialed!')
             status_display(status)
@@ -182,165 +218,37 @@ class Player(object):
         return data
 
     def get_rank(self):
+        url = "https://api.shisanshui.rtxux.xyz/rank"
+        headers = {
+            'x-auth-token': self.token
+        }
+        r = requests.get(url, headers=headers)
         data = []
-        r = rank_(self.token)
-        # status = r.json()['status']
         data = r.json()
         print('get_rank may be successful')
-        # print(data)
-        # if status == 0:
-        #     data = r.json()['data']
-        #     print('get_rank may be successful')
-        #     print(r.text)
-        # else:
-        #     print('get_rank fialed!')
-        #     status_display(status)
-        #     print(r.text)
         return data
 
-
-# 注册
-
-
-def register_(user, psw):
-    url = 'https://api.shisanshui.rtxux.xyz/auth/register'
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    data = {
-        'username': user,
-        'password': psw
-    }
-    r = requests.post(url, headers=headers, data=json.dumps(data))
-    return r
-
-# 登录验证
-
-
-def validate_(token):
-    url = 'https://api.shisanshui.rtxux.xyz/auth/validate'
-    headers = {
-        'X-Auth-Token': token
-    }
-    r = requests.get(url, headers=headers)
-    return r
-
-# 注销
-
-
-def logout_(token):
-    url = "https://api.shisanshui.rtxux.xyz/auth/logout"
-    headers = {
-        'x-auth-token': token
-    }
-    r = requests.post(url, headers=headers)
-    return r
-
-# 登录
-
-
-def login_(user, psw):
-    url = "https://api.shisanshui.rtxux.xyz/auth/login"
-    headers = {
-        'content-type': 'application/json'
-    }
-    data = {
-        "username": user,
-        "password": psw
-    }
-    r = requests.post(url, data=json.dumps(data), headers=headers)
-    return r
-
-# 开启战局
-
-
-def game_open_(token):
-    url = "https://api.shisanshui.rtxux.xyz/game/open"
-    headers = {
-        'x-auth-token': token
-    }
-    r = requests.post(url, headers=headers)
-    return r
-
-# 出牌
-
-
-def game_submit_(token, user_id, card):
-    url = "https://api.shisanshui.rtxux.xyz/game/submit"
-    payload = {
-        'id': user_id,
-        'card': card
-    }
-    headers = {
-        'content-type': "application/json",
-        'x-auth-token': token
-    }
-    r = requests.post(url, data=payload, headers=headers)
-    return r
-
-# 历史战局列表
-
-
-def history(token, page, limit, play_id):
-    url = "https://api.shisanshui.rtxux.xyz/history"
-    querystring = {
-        "page": page,
-        "limit": limit,
-        "player_id": play_id
-    }
-    headers = {
-        'x-auth-token': token
-    }
-    r = requests.get(url, headers=headers, params=querystring)
-    return r
-
-# 历史战局详情
-
-
-def history_detail(token, id):
-    url = "https://api.shisanshui.rtxux.xyz/history/" + id
-    headers = {
-        'x-auth-token': token
-    }
-    r = requests.get(url, headers=headers)
-    return r
-
-def rank_(token):
-    url = "https://api.shisanshui.rtxux.xyz/rank"
-    headers = {
-        'x-auth-token': token
-    }
-    r = requests.get(url, headers=headers)
-    # print(r.text)
-    # url = r.requests.headers['string']
-    # r = requests.get(url, headers=headers)
-    return r
-
 def main():
-    p1 = Player('s12', '12345678')
+    p1 = Player('sddd12', '87654321')
 
     # p1.register()
 
     p1.login()
 
-    # card = p1.game_open()
-    # print()
-    # s = Thirteen_Poker.AI(card) 
-    # print()
-    # p1.game_submit(s)
+    card = p1.game_open()
+    s = card_order.AI(card) 
+    p1.game_submit(s)
 
     data = p1.get_history(0, 20, p1.user_id)
-    print(data)
 
-    # data = p1.get_history(5, 5, 1)
-    # print(data)
     # data = p1.get_rank()
     # print(data)
 
-    p1.validate_token()
-    # p1.logout()
+    data = p1.get_history_detail(14785)
+    # print(data)
 
-    p1.show()
+    p1.validate_token()
+    p1.logout()
 
 if __name__ == '__main__':
     main()
